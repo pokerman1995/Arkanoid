@@ -33,7 +33,8 @@ class BallSprite(pygame.sprite.Sprite):
         hit = 0
 
         if self.y + self.dy + self.radius / 2 > screen_rect.y + screen_rect.height and screen_rect.x < self.x < screen_rect.x + screen_rect.width:
-            self.dy *= -1
+            self.dy *= 1
+            end_game(score)
 
         elif self.y + self.dy - self.radius / 2 < screen_rect.y and screen_rect.x < self.x < screen_rect.x + screen_rect.width:
             self.dy *= -1
@@ -41,7 +42,7 @@ class BallSprite(pygame.sprite.Sprite):
         elif self.x + self.dx + self.radius / 2 > screen_rect.x + screen_rect.width or self.x + self.dx - self.radius / 2 < screen_rect.x:
             self.dx *= -1
 
-        elif self.y + self.dy + self.radius / 2 >= player.y and player.x <= self.x + self.dx <= player.x + player.width:
+        elif player.y + player.y >= self.y + self.dy + self.radius / 2 >= player.y and player.x <= self.x + self.dx <= player.x + player.width:
             dist = self.x - player.rect.centerx
             self.dy *= -1
             self.dx = int((10 * dist) / 75)
@@ -53,11 +54,11 @@ class BallSprite(pygame.sprite.Sprite):
                     self.dy *= -1
                     index = bricks.index(wall)
                     bricks.remove(wall)
+                    increase_score()
                     del colors[index]
                     break
                 else:
                     self.dx *= -1
-
                     index = bricks.index(wall)
                     bricks.remove(wall)
                     del colors[index]
@@ -105,6 +106,27 @@ ball_radius = 10
 player = PlayerSprite(player_position_x, player_position_y, player_width, player_height)
 ball = BallSprite(ball_position_x, ball_position_y, ball_radius, ball_position_dx, ball_position_dy)
 
+
+def end_game(counter):
+    font = pygame.font.SysFont(None, 80)
+    text = font.render("Game Over", True, (255, 255, 255))
+    screen.blit(text, (800 / 2 - text.get_width() / 2, 250))
+    font = pygame.font.SysFont(None, 60)
+    text = font.render("Punktzahl: " + str(counter), True, (255, 255, 255))
+    screen.blit(text, (800 / 2 - text.get_width() / 2, 320))
+
+
+def bricks_removed(counter):
+    font = pygame.font.SysFont(None, 50)
+    text = font.render("Punkte: " + str(counter), True, (255, 255, 255))
+    screen.blit(text, ((790 - text.get_width()), 550))
+
+
+def increase_score():
+    global score
+    score += 10
+
+
 bricks, colors = [], []
 for x in range(15, 775, 51):
     for y in range(15, 215, 50):
@@ -115,6 +137,7 @@ screen_rect = pygame.Rect(0, 0, 800, 600)
 # obstacles.append(screen_rect)
 
 gameExit = False
+score = 0
 
 while not gameExit:
     clock.tick(50)
@@ -139,9 +162,9 @@ while not gameExit:
     for brick, (a, b) in zip(bricks, colors):
         pygame.draw.rect(screen, (200, a, b), brick)
     pygame.draw.rect(screen, (0, 0, 0), screen_rect, 1)
-
     pygame.draw.circle(screen, (255, 255, 255), (ball.x, ball.y), ball.radius)
     pygame.draw.rect(screen, BLUE, player)
+    bricks_removed(score)
     pygame.display.update()
 
 pygame.quit()
