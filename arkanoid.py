@@ -1,6 +1,5 @@
 import pygame
 import sys
-import math
 from pygame.locals import *
 
 
@@ -34,7 +33,8 @@ class BallSprite(pygame.sprite.Sprite):
 
         if self.y + self.dy + self.radius / 2 > screen_rect.y + screen_rect.height and screen_rect.x < self.x < screen_rect.x + screen_rect.width:
             self.dy *= 1
-            end_game(score)
+            global end_screen
+            end_screen = True
 
         elif self.y + self.dy - self.radius / 2 < screen_rect.y and screen_rect.x < self.x < screen_rect.x + screen_rect.width:
             self.dy *= -1
@@ -103,8 +103,11 @@ ball_position_dx = 0
 ball_position_dy = 5
 ball_radius = 10
 
+
 player = PlayerSprite(player_position_x, player_position_y, player_width, player_height)
 ball = BallSprite(ball_position_x, ball_position_y, ball_radius, ball_position_dx, ball_position_dy)
+
+end_screen = False
 
 
 def end_game(counter):
@@ -155,17 +158,19 @@ while not gameExit:
             player_position_x_change = 0
 
     screen.blit(background, (0, 0))
-
     player.move(player_position_x_change)
     ball.move()
-
-    for brick, (a, b) in zip(bricks, colors):
-        pygame.draw.rect(screen, (200, a, b), brick)
-    pygame.draw.rect(screen, (0, 0, 0), screen_rect, 1)
-    pygame.draw.circle(screen, (255, 255, 255), (ball.x, ball.y), ball.radius)
-    pygame.draw.rect(screen, BLUE, player)
-    bricks_removed(score)
-    pygame.display.update()
+    if end_screen:
+        end_game(score)
+        pygame.display.update()
+    else:
+        for brick, (a, b) in zip(bricks, colors):
+            pygame.draw.rect(screen, (200, a, b), brick)
+        pygame.draw.rect(screen, (0, 0, 0), screen_rect, 1)
+        pygame.draw.circle(screen, (255, 255, 255), (ball.x, ball.y), ball.radius)
+        pygame.draw.rect(screen, BLUE, player)
+        bricks_removed(score)
+        pygame.display.update()
 
 pygame.quit()
 quit()
