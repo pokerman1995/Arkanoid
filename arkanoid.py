@@ -29,8 +29,6 @@ class BallSprite(pygame.sprite.Sprite):
         self.rect = pygame.Rect(x - radius, y - radius, 2 * radius, 2 * radius)
 
     def move(self):
-        hit = 0
-
         if self.y + self.dy + self.radius / 2 > screen_rect.y + screen_rect.height and screen_rect.x < self.x < screen_rect.x + screen_rect.width:
             self.dy *= 1
             global end_screen
@@ -46,6 +44,7 @@ class BallSprite(pygame.sprite.Sprite):
             dist = self.x - player.rect.centerx
             self.dy *= -1
             self.dx = int((10 * dist) / 75)
+            player_sound.play()
 
         for wall in bricks:
             rect = pygame.Rect(self.rect.x + self.dx, self.rect.y + self.dy, self.rect.width, self.rect.height)
@@ -55,6 +54,7 @@ class BallSprite(pygame.sprite.Sprite):
                     index = bricks.index(wall)
                     bricks.remove(wall)
                     increase_score()
+                    brick_sound.play()
                     del colors[index]
                     break
                 else:
@@ -108,6 +108,10 @@ player = PlayerSprite(player_position_x, player_position_y, player_width, player
 ball = BallSprite(ball_position_x, ball_position_y, ball_radius, ball_position_dx, ball_position_dy)
 
 end_screen = False
+
+player_sound = pygame.mixer.Sound("beep1.wav")
+brick_sound = pygame.mixer.Sound("beep2.wav")
+end_sound = pygame.mixer.Sound("cheering.wav")
 
 
 def end_game(counter):
@@ -163,6 +167,7 @@ while not gameExit:
     if end_screen:
         end_game(score)
         pygame.display.update()
+        end_sound.play()
     else:
         for brick, (a, b) in zip(bricks, colors):
             pygame.draw.rect(screen, (200, a, b), brick)
