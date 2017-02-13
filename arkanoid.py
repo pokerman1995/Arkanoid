@@ -80,8 +80,8 @@ class BrickSprite(pygame.sprite.Sprite):
         self.rect = pygame.Rect(x, y, width, height)
 
 
+pygame.mixer.pre_init(44100, -16, 2, 4096)
 pygame.init()
-pygame.mixer.pre_init(44100, -16, 2, 2048)
 pygame.mixer.init()
 
 screen = pygame.display.set_mode((800, 600), DOUBLEBUF)
