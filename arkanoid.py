@@ -81,6 +81,9 @@ class BrickSprite(pygame.sprite.Sprite):
 
 
 pygame.init()
+pygame.mixer.pre_init(44100, -16, 2, 2048)
+pygame.mixer.init()
+
 screen = pygame.display.set_mode((800, 600), DOUBLEBUF)
 pygame.display.set_caption('Arkanoid')
 
